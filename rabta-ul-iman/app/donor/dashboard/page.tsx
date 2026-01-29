@@ -59,17 +59,29 @@ export default function DonorDashboard() {
       setLoading(true);
       
       // Fetch profile
-      const profileRes = await fetch('/api/donor/profile');
+      const profileRes = await fetch('/api/donor/profile', {
+        credentials: 'include',
+      });
+      
       if (profileRes.ok) {
         const profileData = await profileRes.json();
         setProfile(profileData.data);
+      } else {
+        const errorData = await profileRes.json().catch(() => ({ error: 'Failed to fetch profile' }));
+        console.error('Profile fetch error:', errorData);
       }
 
       // Fetch transactions
-      const transactionsRes = await fetch('/api/donor/transactions');
+      const transactionsRes = await fetch('/api/donor/transactions', {
+        credentials: 'include',
+      });
+      
       if (transactionsRes.ok) {
         const transactionsData = await transactionsRes.json();
         setTransactions(transactionsData.data || []);
+      } else {
+        const errorData = await transactionsRes.json().catch(() => ({ error: 'Failed to fetch transactions' }));
+        console.error('Transactions fetch error:', errorData);
       }
     } catch (error) {
       console.error('Error fetching donor data:', error);

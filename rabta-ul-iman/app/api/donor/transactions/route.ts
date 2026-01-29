@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/src/lib/auth';
 import connectDB from '@/src/lib/db';
 import Transaction from '@/src/models/Transaction';
+import User from '@/src/models/User';
 
 // Force Node.js runtime
 export const runtime = 'nodejs';
@@ -44,8 +45,27 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
+    // Get user ID from session (with fallback to username lookup)
+    let userId = session.user.id;
+    if (!userId && session.user.username) {
+      const user = await User.findOne({ username: session.user.username }).lean();
+      if (user?._id) {
+        userId = user._id.toString();
+      }
+    }
+
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'User not found - Please log out and log in again',
+        },
+        { status: 404 }
+      );
+    }
+
     // Fetch transactions for the current donor
-    const transactions = await Transaction.find({ donorId: session.user.id })
+    const transactions = await Transaction.find({ donorId: userId })
       .sort({ date: -1 }) // Most recent first
       .skip(skip)
       .limit(limit)

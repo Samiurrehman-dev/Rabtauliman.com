@@ -54,12 +54,38 @@ export async function GET(request: NextRequest) {
       { $group: { _id: null, total: { $sum: '$amount' } } },
     ]);
     
+    // Calculate Rabta Fund (approved transactions with type containing 'rabta')
+    const rabtaAggregation = await Transaction.aggregate([
+      { 
+        $match: { 
+          status: 'approved',
+          type: { $regex: /rabta/i }
+        } 
+      },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]);
+    
+    // Calculate Madrassa Fund (approved transactions with type containing 'madrassa')
+    const madrassaAggregation = await Transaction.aggregate([
+      { 
+        $match: { 
+          status: 'approved',
+          type: { $regex: /madrassa/i }
+        } 
+      },
+      { $group: { _id: null, total: { $sum: '$amount' } } },
+    ]);
+    
     const totalApprovedFunds = approvedAggregation[0]?.total || 0;
+    const rabtaFund = rabtaAggregation[0]?.total || 0;
+    const madrassaFund = madrassaAggregation[0]?.total || 0;
     const pendingCount = await Transaction.countDocuments({ status: 'pending' });
     const totalTransactions = await Transaction.countDocuments();
 
     const stats = {
       totalApprovedFunds,
+      rabtaFund,
+      madrassaFund,
       pendingCount,
       totalTransactions,
     };

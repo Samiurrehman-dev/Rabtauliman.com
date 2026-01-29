@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
     // Check authentication
     const session = await auth();
     
+    console.log('Session in profile route:', JSON.stringify(session, null, 2));
+    
     if (!session || !session.user) {
       return NextResponse.json(
         {
@@ -39,14 +41,22 @@ export async function GET(request: NextRequest) {
 
     await connectDB();
 
-    // Find user by ID
-    const user = await User.findById(session.user.id).lean();
+    // Find user by ID (preferred) or username (fallback for old sessions)
+    let user;
+    if (session.user.id) {
+      console.log('Looking up user with ID:', session.user.id);
+      user = await User.findById(session.user.id).lean();
+    } else if (session.user.username) {
+      console.log('Looking up user with username (fallback):', session.user.username);
+      user = await User.findOne({ username: session.user.username }).lean();
+    }
 
     if (!user) {
+      console.error('User not found with ID/username:', session.user.id || session.user.username);
       return NextResponse.json(
         {
           success: false,
-          error: 'User not found',
+          error: 'User not found - Please log out and log in again',
         },
         { status: 404 }
       );
@@ -135,9 +145,22 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { name, phone, whatsapp } = body;
 
+    // Find user by ID or username (fallback)
+    const userId = session.user.id || (await User.findOne({ username: session.user.username }).lean())?._id;
+
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'User not found - Please log out and log in again',
+        },
+        { status: 404 }
+      );
+    }
+
     // Find and update user
     const updatedUser = await User.findByIdAndUpdate(
-      session.user.id,
+      userId,
       {
         $set: {
           ...(name && { name }),

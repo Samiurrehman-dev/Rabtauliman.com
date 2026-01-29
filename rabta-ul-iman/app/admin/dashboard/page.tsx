@@ -42,6 +42,8 @@ interface Transaction {
 
 interface Stats {
   totalApprovedFunds: number;
+  rabtaFund: number;
+  madrassaFund: number;
   pendingCount: number;
   totalTransactions: number;
 }
@@ -52,6 +54,8 @@ export default function AdminDashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalApprovedFunds: 0,
+    rabtaFund: 0,
+    madrassaFund: 0,
     pendingCount: 0,
     totalTransactions: 0,
   });
@@ -89,6 +93,8 @@ export default function AdminDashboard() {
         setTransactions(result.data || []);
         setStats(result.stats || {
           totalApprovedFunds: 0,
+          rabtaFund: 0,
+          madrassaFund: 0,
           pendingCount: 0,
           totalTransactions: 0,
         });
@@ -234,6 +240,15 @@ export default function AdminDashboard() {
                 {session?.user?.name || 'Admin'}
               </span>
             </div>
+            {/* View All Users Button */}
+            <Button
+              onClick={() => router.push('/admin/users')}
+              variant="outline"
+              className="border-emerald-700 text-emerald-700 hover:bg-emerald-50"
+            >
+              <Users className="mr-2 h-4 w-4" />
+              All Donors
+            </Button>
             {/* Refresh Button */}
             <Button
               onClick={fetchTransactions}
@@ -257,7 +272,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Section */}
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
           {/* Total Approved Funds */}
           <Card className="border-emerald-200 dark:border-emerald-900">
             <CardHeader className="pb-3">
@@ -280,6 +295,50 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
+          {/* Rabta Fund */}
+          <Card className="border-blue-200 dark:border-blue-900">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                Rabta Fund
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-3xl font-bold text-blue-700 dark:text-blue-500">
+                    {formatCurrency(stats.rabtaFund)}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Approved Rabta donations
+                  </p>
+                </div>
+                <TrendingUp className="h-12 w-12 text-blue-700 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Madrassa Fund */}
+          <Card className="border-purple-200 dark:border-purple-900">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                Madrassa Fund
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-3xl font-bold text-purple-700 dark:text-purple-500">
+                    {formatCurrency(stats.madrassaFund)}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Approved Madrassa donations
+                  </p>
+                </div>
+                <TrendingUp className="h-12 w-12 text-purple-700 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Pending Approvals */}
           <Card className="border-yellow-200 dark:border-yellow-900">
             <CardHeader className="pb-3">
@@ -298,28 +357,6 @@ export default function AdminDashboard() {
                   </p>
                 </div>
                 <RefreshCw className="h-12 w-12 text-yellow-600 opacity-20" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Donors */}
-          <Card className="border-slate-200 dark:border-slate-700">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                Recent Donors
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-3xl font-bold text-slate-900 dark:text-white">
-                    {recentDonors.length}
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Last 5 approved
-                  </p>
-                </div>
-                <Users className="h-12 w-12 text-slate-400 opacity-20" />
               </div>
             </CardContent>
           </Card>
