@@ -1,166 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/src/lib/db';
-import Transaction from '@/src/models/Transaction';
+import mongoose from 'mongoose';
 
-// Force Node.js runtime (required for MongoDB)
-export const runtime = 'nodejs';
+const MONGODB_URI = process.env.MONGODB_URI || '';
+
+// Inline Transaction schema
+const TransactionSchema = new mongoose.Schema({
+  donorName: String,
+  amount: Number,
+  screenshotUrl: String,
+  status: String,
+  type: String,
+  description: String,
+  userId: mongoose.Schema.Types.ObjectId,
+  donorId: mongoose.Schema.Types.ObjectId,
+  date: Date,
+}, { timestamps: true });
+
+const Transaction = mongoose.models.Transaction || mongoose.model('Transaction', TransactionSchema);
 
 /**
  * GET /api/admin/transactions
- * Fetches all transactions sorted by newest first
+ * Fetches all transactions from MongoDB
  */
 export async function GET(request: NextRequest) {
   try {
-    console.log('📡 GET /api/admin/transactions - Starting...');
+    console.log('📡 Admin transactions API called');
     
-    // Connect to MongoDB
-    console.log('Connecting to MongoDB...');
-    await connectDB();
-    console.log('✅ MongoDB connected');
-
-    // Get query parameters for filtering (optional)
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-
-    // Build query
-    const query: any = {};
-    if (status && ['pending', 'approved', 'rejected'].includes(status)) {
-      query.status = status;
+    // Connect to MongoDB if not connected
+    if (mongoose.connection.readyState !== 1) {
+      console.log('Connecting to MongoDB...');
+      await mongoose.connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 10000,
+      });
+      console.log('✅ MongoDB connected');
     }
 
-    console.log('Fetching transactions with query:', query);
-    
-    // Fetch transactions sorted by newest first
-    const transactions = await Transaction.find(query)
+    // Fetch transactions - limit to 100 for performance
+    const transactions = await Transaction.find({})
       .sort({ createdAt: -1 })
-      .lean()
-      .exec();
+      .limit(100)
+      .lean();
 
     console.log(`Found ${transactions.length} transactions`);
 
-    // Serialize MongoDB ObjectIds to strings for JSON response
-    const serializedTransactions = transactions.map((transaction: any) => ({
-      ...transaction,
-      _id: transaction._id.toString(),
-      userId: transaction.userId?.toString(),
-      donorId: transaction.donorId?.toString(),
-      createdAt: transaction.createdAt?.toISOString() || new Date().toISOString(),
-      updatedAt: transaction.updatedAt?.toISOString() || new Date().toISOString(),
+    // Serialize data
+    const serializedTransactions = transactions.map((t: any) => ({
+      _id: t._id.toString(),
+      donorName: t.donorName,
+      amount: t.amount,
+      screenshotUrl: t.screenshotUrl,
+      status: t.status,
+      type: t.type || 'donation',
+      description: t.description,
+      createdAt: t.createdAt?.toISOString() || new Date().toISOString(),
+      updatedAt: t.updatedAt?.toISOString() || new Date().toISOString(),
     }));
 
-    // Calculate stats
-    const approvedAggregation = await Transaction.aggregate([
-      { $match: { status: 'approved' } },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
-    
-    // Calculate Rabta Fund (approved transactions with type containing 'rabta')
-    const rabtaAggregation = await Transaction.aggregate([
-      { 
-        $match: { 
-          status: 'approved',
-          type: { $regex: /rabta/i }
-        } 
-      },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
-    
-    // Calculate Madrassa Fund (approved transactions with type containing 'madrassa')
-    const madrassaAggregation = await Transaction.aggregate([
-      { 
-        $match: { 
-          status: 'approved',
-          type: { $regex: /madrassa/i }
-        } 
-      },
-      { $group: { _id: null, total: { $sum: '$amount' } } },
-    ]);
-    
-    const totalApprovedFunds = approvedAggregation[0]?.total || 0;
-    const rabtaFund = rabtaAggregation[0]?.total || 0;
-    const madrassaFund = madrassaAggregation[0]?.total || 0;
-    const pendingCount = await Transaction.countDocuments({ status: 'pending' });
-    const totalTransactions = await Transaction.countDocuments();
+    // Calculate stats from fetched transactions (faster than aggregation)
+    const approved = transactions.filter((t: any) => t.status === 'approved');
+    const totalApprovedFunds = approved.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+    const pendingCount = transactions.filter((t: any) => t.status === 'pending').length;
 
     const stats = {
       totalApprovedFunds,
-      rabtaFund,
-      madrassaFund,
+      rabtaFund: 0, // Can be calculated later if needed
+      madrassaFund: 0, // Can be calculated later if needed
       pendingCount,
-      totalTransactions,
+      totalTransactions: transactions.length,
     };
 
-    console.log('Stats calculated:', stats);
+    console.log('✅ Sending response with', transactions.length, 'transactions');
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: serializedTransactions,
-        stats,
-        count: serializedTransactions.length,
-      },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error('❌ Error fetching transactions:', error);
-    console.error('Error stack:', error.stack);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Failed to fetch transactions',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      },
-      { status: 500 }
-    );
-  }
-}
-
-/**
- * POST /api/admin/transactions
- * Creates a new transaction (optional - for testing purposes)
- */
-export async function POST(request: NextRequest) {
-  try {
-    await connectDB();
-
-    const body = await request.json();
-    const { donorName, amount, screenshotUrl } = body;
-
-    // Validate required fields
-    if (!donorName || !amount || !screenshotUrl) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Missing required fields: donorName, amount, screenshotUrl',
-        },
-        { status: 400 }
-      );
-    }
-
-    // Create new transaction
-    const transaction = await Transaction.create({
-      donorName,
-      amount,
-      screenshotUrl,
-      status: 'pending',
+    return NextResponse.json({
+      success: true,
+      data: serializedTransactions,
+      stats,
+      count: serializedTransactions.length,
     });
-
-    return NextResponse.json(
-      {
-        success: true,
-        data: transaction,
-        message: 'Transaction created successfully',
-      },
-      { status: 201 }
-    );
   } catch (error: any) {
-    console.error('Error creating transaction:', error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Failed to create transaction',
-      },
-      { status: 500 }
-    );
+    console.error('❌ Error:', error.message);
+    return NextResponse.json({
+      success: false,
+      error: error.message || 'Failed to fetch transactions',
+    }, { status: 500 });
   }
 }

@@ -39,7 +39,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await connectDB();
+    // Add timeout for database connection
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout - Database connection took too long')), 30000);
+    });
+
+    await Promise.race([connectDB(), timeoutPromise]);
 
     // Find user by ID (preferred) or username (fallback for old sessions)
     let user;

@@ -41,14 +41,21 @@ async function connectDB(): Promise<typeof mongoose> {
     const opts = {
       bufferCommands: false,
       maxPoolSize: 10, // Maximum number of connections in the pool
-      minPoolSize: 5, // Minimum number of connections in the pool
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      minPoolSize: 2, // Minimum number of connections in the pool
+      serverSelectionTimeoutMS: 30000, // Timeout after 30s
       socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      connectTimeoutMS: 30000, // Timeout for initial connection
+      retryWrites: true,
+      retryReads: true,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
       console.log('✅ MongoDB connected successfully');
       return mongoose;
+    }).catch((error) => {
+      console.error('❌ MongoDB connection error:', error);
+      cached.promise = null; // Reset promise on error
+      throw error;
     });
   }
 

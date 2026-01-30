@@ -63,6 +63,7 @@ export default function AdminDashboard() {
   const [updating, setUpdating] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -71,20 +72,34 @@ export default function AdminDashboard() {
     }
   }, [status, router]);
 
-  // Fetch transactions on mount
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchTransactions();
-    }
-  }, [status]);
-
-  // Fetch transactions from API
+  // Fetch transactions function
   const fetchTransactions = async () => {
     try {
       setLoading(true);
+      setFetchError(null);
       console.log('Fetching transactions from API...');
-      const response = await fetch('/api/admin/transactions');
+      const response = await fetch('/api/admin/transactions', {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
       console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response (raw):', errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          console.error('Error response (parsed):', errorData);
+          setFetchError(errorData.error || 'Unknown error');
+        } catch (e) {
+          console.error('Failed to parse error response');
+          setFetchError(`Status ${response.status}`);
+        }
+        return;
+      }
       
       const result = await response.json();
       console.log('API Response:', result);
@@ -101,15 +116,23 @@ export default function AdminDashboard() {
         console.log('Transactions loaded:', result.data?.length || 0);
       } else {
         console.error('Failed to fetch transactions:', result.error);
-        alert(`Failed to fetch transactions: ${result.error}`);
+        setFetchError(result.error);
       }
     } catch (error) {
       console.error('Error fetching transactions:', error);
-      alert(`Error fetching transactions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setFetchError(error instanceof Error ? error.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
   };
+
+  // Fetch transactions on mount - only once
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchTransactions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   // Update transaction status
   const updateTransactionStatus = async (
@@ -212,6 +235,35 @@ export default function AdminDashboard() {
   // Don't render dashboard if not authenticated
   if (status === 'unauthenticated') {
     return null;
+  }
+
+  // Show loading while fetching data
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center">
+          <RefreshCw className="h-8 w-8 animate-spin text-emerald-700 mx-auto mb-4" />
+          <p className="text-slate-600">Loading transactions...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if fetch failed
+  if (fetchError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="text-center">
+          <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-slate-800 mb-2">Error Loading Data</h2>
+          <p className="text-slate-600 mb-4">{fetchError}</p>
+          <Button onClick={() => fetchTransactions()}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   // Get recent approved donors (last 5)

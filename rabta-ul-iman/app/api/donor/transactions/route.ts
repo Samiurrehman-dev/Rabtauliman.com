@@ -3,6 +3,7 @@ import { auth } from '@/src/lib/auth';
 import connectDB from '@/src/lib/db';
 import Transaction from '@/src/models/Transaction';
 import User from '@/src/models/User';
+import mongoose from 'mongoose';
 
 // Force Node.js runtime
 export const runtime = 'nodejs';
@@ -12,11 +13,14 @@ export const runtime = 'nodejs';
  * Get current donor's transaction history
  */
 export async function GET(request: NextRequest) {
+  console.log('=== Donor Transactions API Called ===');
   try {
     // Check authentication
     const session = await auth();
+    console.log('Session:', session ? { id: session.user?.id, username: session.user?.username, role: session.user?.role } : 'No session');
     
     if (!session || !session.user) {
+      console.error('No session or user found');
       return NextResponse.json(
         {
           success: false,
@@ -37,7 +41,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await connectDB();
+    // Add timeout for database connection
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout - Database connection took too long')), 30000);
+    });
+
+    await Promise.race([connectDB(), timeoutPromise]);
 
     // Parse query parameters for pagination
     const { searchParams } = new URL(request.url);
@@ -47,14 +56,19 @@ export async function GET(request: NextRequest) {
 
     // Get user ID from session (with fallback to username lookup)
     let userId = session.user.id;
+    console.log('Initial userId from session:', userId);
+    
     if (!userId && session.user.username) {
+      console.log('Looking up user by username:', session.user.username);
       const user = await User.findOne({ username: session.user.username }).lean();
       if (user?._id) {
         userId = user._id.toString();
+        console.log('Found userId from username lookup:', userId);
       }
     }
 
     if (!userId) {
+      console.error('No userId found after lookup');
       return NextResponse.json(
         {
           success: false,
@@ -64,15 +78,33 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch transactions for the current donor
-    const transactions = await Transaction.find({ donorId: userId })
+    console.log('Fetching transactions for userId:', userId);
+    
+    // Convert string ID to ObjectId for MongoDB query
+    const objectId = new mongoose.Types.ObjectId(userId);
+    
+    // Fetch transactions for the current donor (check both userId and donorId fields)
+    const transactions = await Transaction.find({ 
+      $or: [
+        { donorId: objectId },
+        { userId: objectId }
+      ]
+    })
       .sort({ date: -1 }) // Most recent first
       .skip(skip)
       .limit(limit)
       .lean();
 
+    console.log('Found transactions:', transactions.length);
+
     // Get total count for pagination
-    const totalCount = await Transaction.countDocuments({ donorId: session.user.id });
+    const totalCount = await Transaction.countDocuments({ 
+      $or: [
+        { donorId: objectId },
+        { userId: objectId }
+      ]
+    });
+    console.log('Total transaction count:', totalCount);
 
     return NextResponse.json(
       {

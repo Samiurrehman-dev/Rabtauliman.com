@@ -58,33 +58,55 @@ export default function DonorDashboard() {
     try {
       setLoading(true);
       
+      console.log('Fetching donor data...');
+      
       // Fetch profile
       const profileRes = await fetch('/api/donor/profile', {
         credentials: 'include',
       });
       
+      console.log('Profile response status:', profileRes.status);
+      
       if (profileRes.ok) {
         const profileData = await profileRes.json();
         setProfile(profileData.data);
+        console.log('Profile loaded successfully');
       } else {
         const errorData = await profileRes.json().catch(() => ({ error: 'Failed to fetch profile' }));
         console.error('Profile fetch error:', errorData);
       }
 
       // Fetch transactions
+      console.log('Fetching transactions from /api/donor/transactions...');
       const transactionsRes = await fetch('/api/donor/transactions', {
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      
+      console.log('Transactions response status:', transactionsRes.status);
+      console.log('Transactions response headers:', Object.fromEntries(transactionsRes.headers.entries()));
       
       if (transactionsRes.ok) {
         const transactionsData = await transactionsRes.json();
+        console.log('Transactions data:', transactionsData);
         setTransactions(transactionsData.data || []);
       } else {
-        const errorData = await transactionsRes.json().catch(() => ({ error: 'Failed to fetch transactions' }));
-        console.error('Transactions fetch error:', errorData);
+        const errorText = await transactionsRes.text();
+        console.error('Transactions error response (raw):', errorText);
+        try {
+          const errorData = JSON.parse(errorText);
+          console.error('Transactions fetch error (parsed):', errorData);
+          alert(`Error fetching transactions: ${errorData.error || 'Unknown error'}`);
+        } catch (e) {
+          console.error('Failed to parse error response');
+          alert(`Error fetching transactions: Status ${transactionsRes.status}`);
+        }
       }
     } catch (error) {
       console.error('Error fetching donor data:', error);
+      alert(`Error fetching transactions: ${error instanceof Error ? error.message : 'Failed to fetch'}`);
     } finally {
       setLoading(false);
     }
