@@ -326,44 +326,44 @@ export default function UserProfilePage() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => router.push('/admin/users')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back to All Users
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Back</span>
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">Donor Profile</h1>
-                <p className="text-sm text-slate-600">
-                  Detailed history and statistics
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900">Donor Profile</h1>
+                <p className="text-xs sm:text-sm text-slate-600 hidden sm:block">
+                  Detailed history
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={fetchUserData}
                 disabled={loading}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
+                <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 ${loading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline text-xs sm:text-sm">Refresh</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                className="flex items-center gap-1 sm:gap-2 text-red-600 hover:text-red-700 px-2 sm:px-3"
               >
-                <LogOut className="h-4 w-4" />
-                Sign Out
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline text-xs sm:text-sm">Logout</span>
               </Button>
             </div>
           </div>
@@ -371,48 +371,48 @@ export default function UserProfilePage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* User Info Card */}
-        <Card className="mb-6 border-emerald-200 bg-gradient-to-br from-white to-emerald-50">
+        <Card className="mb-4 sm:mb-6 border-emerald-200 bg-gradient-to-br from-white to-emerald-50">
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-emerald-900">
-              <div className="h-12 w-12 rounded-full bg-emerald-700 flex items-center justify-center text-white text-xl font-bold">
+            <CardTitle className="flex items-center gap-2 sm:gap-3 text-emerald-900">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-emerald-700 flex items-center justify-center text-white text-lg sm:text-xl font-bold">
                 {userData.user.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="text-2xl">{userData.user.name}</div>
-                <div className="text-sm font-normal text-slate-600">@{userData.user.username}</div>
+                <div className="text-lg sm:text-xl lg:text-2xl">{userData.user.name}</div>
+                <div className="text-xs sm:text-sm font-normal text-slate-600">@{userData.user.username}</div>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
-                <Phone className="h-5 w-5 text-emerald-700" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-lg border border-slate-200">
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-700" />
                 <div>
-                  <p className="text-xs text-slate-600">Phone Number</p>
-                  <p className="font-medium">{userData.user.phone}</p>
+                  <p className="text-xs text-slate-600">Phone</p>
+                  <p className="font-medium text-xs sm:text-sm">{userData.user.phone}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
-                <MessageCircle className="h-5 w-5 text-emerald-700" />
+              <div className="flex items-center gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-lg border border-slate-200">
+                <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-700" />
                 <div>
                   <p className="text-xs text-slate-600">WhatsApp</p>
                   <a
                     href={`https://wa.me/${userData.user.whatsapp.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-emerald-700 hover:text-emerald-800 hover:underline"
+                    className="font-medium text-emerald-700 hover:text-emerald-800 hover:underline text-xs sm:text-sm"
                   >
                     {userData.user.whatsapp}
                   </a>
                 </div>
               </div>
-              <div className="flex items-center gap-3 bg-white p-4 rounded-lg border border-slate-200">
-                <Calendar className="h-5 w-5 text-emerald-700" />
+              <div className="flex items-center gap-2 sm:gap-3 bg-white p-3 sm:p-4 rounded-lg border border-slate-200">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-700" />
                 <div>
                   <p className="text-xs text-slate-600">Joined</p>
-                  <p className="font-medium">{formatDate(userData.user.createdAt)}</p>
+                  <p className="font-medium text-xs sm:text-sm">{formatDate(userData.user.createdAt)}</p>
                 </div>
               </div>
             </div>
@@ -420,70 +420,70 @@ export default function UserProfilePage() {
         </Card>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
           <Card className="border-emerald-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Total Contributed
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 flex items-center gap-1 sm:gap-2">
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Total</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-emerald-700">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-emerald-700">
                 {formatCurrency(userData.stats.totalContributed)}
               </p>
-              <p className="text-xs text-slate-500 mt-1">
-                {userData.stats.approvedCount} approved transactions
+              <p className="text-xs text-slate-500 mt-1 hidden sm:block">
+                {userData.stats.approvedCount} approved
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-purple-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                Madrassa Total
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 flex items-center gap-1 sm:gap-2">
+                <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
+                Madrassa
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-purple-700">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-purple-700">
                 {formatCurrency(userData.stats.madrassaTotal)}
               </p>
-              <Badge className="bg-purple-100 text-purple-800 border-purple-300 mt-2">
+              <Badge className="bg-purple-100 text-purple-800 border-purple-300 mt-2 text-xs hidden sm:inline-flex">
                 Madrassa Fund
               </Badge>
             </CardContent>
           </Card>
 
           <Card className="border-blue-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                Rabta Total
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 flex items-center gap-1 sm:gap-2">
+                <Wallet className="h-3 w-3 sm:h-4 sm:w-4" />
+                Rabta
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-blue-700">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-blue-700">
                 {formatCurrency(userData.stats.rabtaTotal)}
               </p>
-              <Badge className="bg-blue-100 text-blue-800 border-blue-300 mt-2">
+              <Badge className="bg-blue-100 text-blue-800 border-blue-300 mt-2 text-xs hidden sm:inline-flex">
                 Rabta Fund
               </Badge>
             </CardContent>
           </Card>
 
           <Card className="border-amber-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-600 flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Pending Pledges
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 flex items-center gap-1 sm:gap-2">
+                <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                Pending
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold text-amber-700">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-amber-700">
                 {userData.stats.pendingCount}
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-1 hidden sm:block">
                 {userData.stats.rejectedCount} rejected
               </p>
             </CardContent>
@@ -493,25 +493,25 @@ export default function UserProfilePage() {
         {/* Transaction History */}
         <Card>
           <CardHeader>
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="flex justify-between items-start sm:items-center">
                 <div>
-                  <CardTitle>Transaction History</CardTitle>
-                  <CardDescription>
-                    All transactions for this donor ({userData.stats.totalTransactions} total, showing {filteredTransactions.length})
+                  <CardTitle className="text-base sm:text-lg">Transaction History</CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {userData.stats.totalTransactions} total, showing {filteredTransactions.length}
                   </CardDescription>
                 </div>
               </div>
               
               {/* Filters Row */}
-              <div className="flex flex-wrap gap-3 items-center">
+              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3 items-start sm:items-center">
                 {/* Status Filters */}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 w-full sm:w-auto">
                   <Button
                     variant={filter === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('all')}
-                    className={filter === 'all' ? 'bg-emerald-700 hover:bg-emerald-800' : ''}
+                    className={`text-xs sm:text-sm h-8 px-2 sm:px-3 ${filter === 'all' ? 'bg-emerald-700 hover:bg-emerald-800' : ''}`}
                   >
                     All
                   </Button>
@@ -519,7 +519,7 @@ export default function UserProfilePage() {
                     variant={filter === 'pending' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('pending')}
-                    className={filter === 'pending' ? 'bg-amber-600 hover:bg-amber-700' : ''}
+                    className={`text-xs sm:text-sm h-8 px-2 sm:px-3 ${filter === 'pending' ? 'bg-amber-600 hover:bg-amber-700' : ''}`}
                   >
                     Pending
                   </Button>
@@ -527,7 +527,7 @@ export default function UserProfilePage() {
                     variant={filter === 'approved' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('approved')}
-                    className={filter === 'approved' ? 'bg-emerald-700 hover:bg-emerald-800' : ''}
+                    className={`text-xs sm:text-sm h-8 px-2 sm:px-3 ${filter === 'approved' ? 'bg-emerald-700 hover:bg-emerald-800' : ''}`}
                   >
                     Approved
                   </Button>
@@ -535,21 +535,21 @@ export default function UserProfilePage() {
                     variant={filter === 'rejected' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilter('rejected')}
-                    className={filter === 'rejected' ? 'bg-red-600 hover:bg-red-700' : ''}
+                    className={`text-xs sm:text-sm h-8 px-2 sm:px-3 ${filter === 'rejected' ? 'bg-red-600 hover:bg-red-700' : ''}`}
                   >
                     Rejected
                   </Button>
                 </div>
 
                 {/* Divider */}
-                <div className="h-6 w-px bg-slate-300"></div>
+                <div className="h-px w-full sm:h-6 sm:w-px bg-slate-300"></div>
 
                 {/* Date Filters */}
-                <div className="flex gap-2 items-center">
-                  <CalendarIcon className="h-4 w-4 text-slate-600" />
+                <div className="flex gap-2 items-center w-full sm:w-auto">
+                  <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600" />
                   <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                    <SelectTrigger className="w-[140px] h-9">
-                      <SelectValue placeholder="All Months" />
+                    <SelectTrigger className="flex-1 sm:w-[120px] lg:w-[140px] h-8 sm:h-9 text-xs sm:text-sm">
+                      <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Months</SelectItem>
@@ -562,8 +562,8 @@ export default function UserProfilePage() {
                   </Select>
 
                   <Select value={selectedYear} onValueChange={setSelectedYear}>
-                    <SelectTrigger className="w-[120px] h-9">
-                      <SelectValue placeholder="All Years" />
+                    <SelectTrigger className="flex-1 sm:w-[100px] lg:w-[120px] h-8 sm:h-9 text-xs sm:text-sm">
+                      <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Years</SelectItem>
@@ -583,7 +583,7 @@ export default function UserProfilePage() {
                         setSelectedMonth('all');
                         setSelectedYear('all');
                       }}
-                      className="h-9"
+                      className="h-8 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
                     >
                       Clear
                     </Button>
@@ -595,71 +595,71 @@ export default function UserProfilePage() {
           <CardContent>
             {filteredTransactions.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-slate-500">No transactions found</p>
+                <p className="text-slate-500 text-sm sm:text-base">No transactions found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-2 sm:mx-0">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Screenshot</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Date</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Category</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Amount</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Status</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Screenshot</TableHead>
+                      <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredTransactions.map((transaction) => (
                       <TableRow key={transaction._id}>
-                        <TableCell className="text-slate-600">
+                        <TableCell className="text-slate-600 text-xs sm:text-sm">
                           {formatDate(transaction.date || transaction.createdAt)}
                         </TableCell>
-                        <TableCell>{getCategoryBadge(transaction.type)}</TableCell>
-                        <TableCell className="font-semibold text-slate-900">
+                        <TableCell className="hidden sm:table-cell">{getCategoryBadge(transaction.type)}</TableCell>
+                        <TableCell className="font-semibold text-slate-900 text-xs sm:text-sm">
                           {formatCurrency(transaction.amount)}
                         </TableCell>
                         <TableCell>{getStatusBadge(transaction.status)}</TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           {transaction.screenshotUrl ? (
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => openImageDialog(transaction.screenshotUrl!)}
-                              className="flex items-center gap-2"
+                              className="flex items-center gap-1 h-7 sm:h-8 px-2 sm:px-3"
                             >
-                              <Eye className="h-4 w-4" />
-                              View
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden lg:inline text-xs">View</span>
                             </Button>
                           ) : (
-                            <span className="text-slate-400 text-sm">No screenshot</span>
+                            <span className="text-slate-400 text-xs sm:text-sm">No screenshot</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
                           {transaction.status === 'pending' ? (
-                            <div className="flex items-center gap-2 justify-end">
+                            <div className="flex items-center gap-1 justify-end">
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => updateTransactionStatus(transaction._id, 'approved')}
-                                className="flex items-center gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
+                                className="flex items-center gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 h-7 sm:h-8 px-2 sm:px-3"
                               >
-                                <Check className="h-4 w-4" />
-                                Approve
+                                <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden lg:inline text-xs">Approve</span>
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 onClick={() => updateTransactionStatus(transaction._id, 'rejected')}
-                                className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
                               >
-                                <X className="h-4 w-4" />
-                                Reject
+                                <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden lg:inline text-xs">Reject</span>
                               </Button>
                             </div>
                           ) : (
-                            <span className="text-slate-400 text-sm">-</span>
+                            <span className="text-slate-400 text-xs sm:text-sm">-</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -674,13 +674,13 @@ export default function UserProfilePage() {
 
       {/* Image Dialog */}
       <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl lg:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Payment Screenshot</DialogTitle>
-            <DialogDescription>Transaction proof of payment</DialogDescription>
+            <DialogTitle className="text-base sm:text-lg">Payment Screenshot</DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm">Transaction proof of payment</DialogDescription>
           </DialogHeader>
           {selectedImage && (
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
               <img
                 src={selectedImage}
                 alt="Transaction Screenshot"
