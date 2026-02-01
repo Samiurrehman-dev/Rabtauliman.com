@@ -132,87 +132,88 @@ export default function DonorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-2 sm:p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
               Donor Dashboard
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 mt-2">
-              Welcome back, {session.user?.name || profile?.name}
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-1 sm:mt-2">
+              Welcome, {session.user?.name || profile?.name}
             </p>
           </div>
           <Button 
             onClick={handleSignOut}
             variant="outline"
-            className="border-red-200 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+            size="sm"
+            className="border-red-200 text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20 text-xs sm:text-sm"
           >
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
             Sign Out
           </Button>
         </div>
 
         {/* Profile Card */}
-        <Card className="mb-6 border-emerald-200 dark:border-emerald-900 shadow-lg">
+        <Card className="mb-4 sm:mb-6 border-emerald-200 dark:border-emerald-900 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl text-slate-900 dark:text-white flex items-center">
-              <User className="mr-2 h-6 w-6 text-emerald-700" />
-              Profile Information
+            <CardTitle className="text-lg sm:text-xl lg:text-2xl text-slate-900 dark:text-white flex items-center">
+              <User className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-emerald-700" />
+              Profile
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400">
+            <CardDescription className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               Your account details
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Full Name
                 </label>
-                <div className="flex items-center text-slate-900 dark:text-white">
-                  <User className="mr-2 h-4 w-4 text-slate-500" />
+                <div className="flex items-center text-sm sm:text-base text-slate-900 dark:text-white">
+                  <User className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
                   {profile?.name || session.user?.name || 'N/A'}
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Username
                 </label>
-                <div className="flex items-center text-slate-900 dark:text-white">
-                  <User className="mr-2 h-4 w-4 text-slate-500" />
+                <div className="flex items-center text-sm sm:text-base text-slate-900 dark:text-white">
+                  <User className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
                   {profile?.username || 'N/A'}
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Phone Number
                 </label>
-                <div className="flex items-center text-slate-900 dark:text-white">
-                  <Phone className="mr-2 h-4 w-4 text-slate-500" />
+                <div className="flex items-center text-sm sm:text-base text-slate-900 dark:text-white">
+                  <Phone className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
                   {profile?.phone || 'N/A'}
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   WhatsApp
                 </label>
-                <div className="flex items-center text-slate-900 dark:text-white">
-                  <MessageCircle className="mr-2 h-4 w-4 text-slate-500" />
+                <div className="flex items-center text-sm sm:text-base text-slate-900 dark:text-white">
+                  <MessageCircle className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
                   {profile?.whatsapp || 'N/A'}
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Member Since
                 </label>
-                <div className="flex items-center text-slate-900 dark:text-white">
-                  <Calendar className="mr-2 h-4 w-4 text-slate-500" />
+                <div className="flex items-center text-sm sm:text-base text-slate-900 dark:text-white">
+                  <Calendar className="mr-2 h-3 w-3 sm:h-4 sm:w-4 text-slate-500" />
                   {profile?.joinedDate ? new Date(profile.joinedDate).toLocaleDateString() : 'N/A'}
                 </div>
               </div>
@@ -221,38 +222,38 @@ export default function DonorDashboard() {
         </Card>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <Card className="border-emerald-200 dark:border-emerald-900 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
-                <DollarSign className="mr-2 h-5 w-5 text-emerald-700" />
+              <CardTitle className="text-base sm:text-lg lg:text-xl text-slate-900 dark:text-white flex items-center">
+                <DollarSign className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-emerald-700" />
                 Total Donations
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-emerald-700">
+              <div className="text-2xl sm:text-3xl font-bold text-emerald-700">
                 PKR {profile?.totalDonations?.toLocaleString() || '0'}
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
-                Thank you for your generous support
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
+                Thank you for your support
               </p>
             </CardContent>
           </Card>
 
           <Card className="border-emerald-200 dark:border-emerald-900 shadow-lg">
             <CardHeader>
-              <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
-                <History className="mr-2 h-5 w-5 text-emerald-700" />
+              <CardTitle className="text-base sm:text-lg lg:text-xl text-slate-900 dark:text-white flex items-center">
+                <History className="mr-2 h-4 w-4 sm:h-5 sm:w-5 text-emerald-700" />
                 Recent Activity
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-lg font-medium text-slate-900 dark:text-white">
+              <div className="text-lg sm:text-xl font-medium text-slate-900 dark:text-white">
                 {transactions.length} Transaction{transactions.length !== 1 ? 's' : ''}
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
                 {profile?.lastDonation 
-                  ? `Last donation: ${new Date(profile.lastDonation).toLocaleDateString()}`
+                  ? `Last: ${new Date(profile.lastDonation).toLocaleDateString()}`
                   : 'No donations yet'}
               </p>
             </CardContent>
@@ -262,11 +263,11 @@ export default function DonorDashboard() {
         {/* Transactions Table */}
         <Card className="border-emerald-200 dark:border-emerald-900 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl text-slate-900 dark:text-white flex items-center">
-              <History className="mr-2 h-6 w-6 text-emerald-700" />
+            <CardTitle className="text-lg sm:text-xl lg:text-2xl text-slate-900 dark:text-white flex items-center">
+              <History className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-emerald-700" />
               Transaction History
             </CardTitle>
-            <CardDescription className="text-slate-600 dark:text-slate-400">
+            <CardDescription className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               Your donation records
             </CardDescription>
           </CardHeader>
@@ -274,38 +275,38 @@ export default function DonorDashboard() {
             {transactions.length === 0 ? (
               <div className="text-center py-8 text-slate-600 dark:text-slate-400">
                 <History className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No transactions yet</p>
-                <p className="text-sm mt-2">Your donation history will appear here</p>
+                <p className="text-sm sm:text-base">No transactions yet</p>
+                <p className="text-xs sm:text-sm mt-2">Your donation history will appear here</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-2 sm:mx-0">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-700">
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Date</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Type</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Description</th>
-                      <th className="text-right py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Amount</th>
-                      <th className="text-center py-3 px-4 text-sm font-semibold text-slate-700 dark:text-slate-300">Status</th>
+                      <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Date</th>
+                      <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hidden md:table-cell">Type</th>
+                      <th className="text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300 hidden lg:table-cell">Description</th>
+                      <th className="text-right py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Amount</th>
+                      <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-300">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {transactions.map((transaction) => (
                       <tr key={transaction.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td className="py-3 px-4 text-sm text-slate-900 dark:text-white">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-slate-900 dark:text-white">
                           {new Date(transaction.date).toLocaleDateString()}
                         </td>
-                        <td className="py-3 px-4 text-sm text-slate-900 dark:text-white capitalize">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-slate-900 dark:text-white capitalize hidden md:table-cell">
                           {transaction.type}
                         </td>
-                        <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400 hidden lg:table-cell">
                           {transaction.description || 'N/A'}
                         </td>
-                        <td className="py-3 px-4 text-sm text-right font-semibold text-emerald-700">
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm text-right font-semibold text-emerald-700">
                           PKR {transaction.amount.toLocaleString()}
                         </td>
-                        <td className="py-3 px-4 text-center">
-                          <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                        <td className="py-2 sm:py-3 px-2 sm:px-4 text-center">
+                          <span className={`inline-block px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full ${
                             transaction.status === 'completed' 
                               ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                               : transaction.status === 'pending'

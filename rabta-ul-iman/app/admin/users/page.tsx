@@ -444,60 +444,61 @@ export default function AdminUsersPage() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => router.push('/admin/dashboard')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
               >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Dashboard
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Back</span>
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">All Donors</h1>
-                <p className="text-sm text-slate-600">
-                  Manage and view all donor profiles
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-900">All Donors</h1>
+                <p className="text-xs sm:text-sm text-slate-600 hidden sm:block">
+                  Manage donor profiles
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <Button
                 onClick={downloadDonorsReport}
                 variant="outline"
-                className="flex items-center gap-2 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
+                size="sm"
+                className="flex items-center gap-1 sm:gap-2 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 text-xs sm:text-sm px-2 sm:px-3"
                 disabled={loading || users.length === 0}
               >
-                <Download className="h-4 w-4" />
-                Download Report
+                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden lg:inline">Report</span>
               </Button>
               <Button
                 onClick={() => setAddDialogOpen(true)}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-2"
+                size="sm"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
               >
-                <UserPlus className="h-4 w-4" />
-                Add Donor
+                <UserPlus className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Add Donor</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={fetchUsers}
                 disabled={loading}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
+                <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 ${loading ? 'animate-spin' : ''}`} />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSignOut}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+                className="flex items-center gap-1 sm:gap-2 text-red-600 hover:text-red-700 px-2 sm:px-3"
               >
-                <LogOut className="h-4 w-4" />
-                Sign Out
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           </div>
@@ -505,33 +506,33 @@ export default function AdminUsersPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Stats Card */}
-        <Card className="mb-6">
+        <Card className="mb-4 sm:mb-6">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-emerald-700" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-700" />
               Donor Overview
             </CardTitle>
-            <CardDescription>
-              Total registered donors and their contribution statistics
+            <CardDescription className="text-xs sm:text-sm">
+              Total donors and statistics
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                <p className="text-sm text-emerald-700 font-medium">Total Donors</p>
-                <p className="text-2xl font-bold text-emerald-900">{filteredUsers.length}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div className="bg-emerald-50 p-3 sm:p-4 rounded-lg border border-emerald-200">
+                <p className="text-xs sm:text-sm text-emerald-700 font-medium">Total Donors</p>
+                <p className="text-xl sm:text-2xl font-bold text-emerald-900">{filteredUsers.length}</p>
               </div>
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-700 font-medium">Total Contributions</p>
-                <p className="text-2xl font-bold text-blue-900">
+              <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border border-blue-200">
+                <p className="text-xs sm:text-sm text-blue-700 font-medium">Total Contributions</p>
+                <p className="text-xl sm:text-2xl font-bold text-blue-900">
                   {formatCurrency(filteredUsers.reduce((sum, u) => sum + u.stats.totalContributed, 0))}
                 </p>
               </div>
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <p className="text-sm text-amber-700 font-medium">Pending Pledges</p>
-                <p className="text-2xl font-bold text-amber-900">
+              <div className="bg-amber-50 p-3 sm:p-4 rounded-lg border border-amber-200">
+                <p className="text-xs sm:text-sm text-amber-700 font-medium">Pending Pledges</p>
+                <p className="text-xl sm:text-2xl font-bold text-amber-900">
                   {filteredUsers.reduce((sum, u) => sum + u.stats.pendingCount, 0)}
                 </p>
               </div>
@@ -542,25 +543,25 @@ export default function AdminUsersPage() {
         {/* Users Table */}
         <Card>
           <CardHeader>
-            <CardTitle>All Donors</CardTitle>
-            <CardDescription>
-              Search by name or username, then view history or add fund manually
+            <CardTitle className="text-base sm:text-lg">All Donors</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
+              Search by name or username
             </CardDescription>
             
             {/* Search Input */}
-            <div className="mt-4">
+            <div className="mt-3 sm:mt-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400" />
                 <Input
                   type="text"
-                  placeholder="Search by name or username..."
+                  placeholder="Search donors..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-8 sm:pl-10 text-xs sm:text-sm"
                 />
               </div>
               {searchQuery && (
-                <p className="text-sm text-slate-600 mt-2">
+                <p className="text-xs sm:text-sm text-slate-600 mt-2">
                   Showing {filteredUsers.length} of {users.length} donors
                 </p>
               )}
@@ -579,84 +580,84 @@ export default function AdminUsersPage() {
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto -mx-2 sm:mx-0">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Username</TableHead>
-                      <TableHead>WhatsApp</TableHead>
-                      <TableHead>Total Contributed</TableHead>
-                      <TableHead>Transactions</TableHead>
-                      <TableHead>Pending</TableHead>
-                      <TableHead>Joined</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Name</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden md:table-cell">Username</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">WhatsApp</TableHead>
+                      <TableHead className="text-xs sm:text-sm">Contributed</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Transactions</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Pending</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden xl:table-cell">Joined</TableHead>
+                      <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map((user) => (
                       <TableRow key={user._id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell className="text-slate-600">@{user.username}</TableCell>
-                        <TableCell>
+                        <TableCell className="font-medium text-xs sm:text-sm">{user.name}</TableCell>
+                        <TableCell className="text-slate-600 text-xs sm:text-sm hidden md:table-cell">@{user.username}</TableCell>
+                        <TableCell className="hidden lg:table-cell">
                           <a
                             href={`https://wa.me/${user.whatsapp.replace(/\D/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-emerald-700 hover:text-emerald-800 hover:underline"
+                            className="text-emerald-700 hover:text-emerald-800 hover:underline text-xs sm:text-sm"
                           >
                             {user.whatsapp}
                           </a>
                         </TableCell>
-                        <TableCell className="font-semibold text-emerald-700">
+                        <TableCell className="font-semibold text-emerald-700 text-xs sm:text-sm">
                           {formatCurrency(user.stats.totalContributed)}
                         </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-slate-50">
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline" className="bg-slate-50 text-xs">
                             {user.stats.totalTransactions}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden lg:table-cell">
                           {user.stats.pendingCount > 0 ? (
-                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300">
+                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
                               {user.stats.pendingCount}
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="bg-slate-50">
+                            <Badge variant="outline" className="bg-slate-50 text-xs">
                               0
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-slate-600">
+                        <TableCell className="text-slate-600 text-xs sm:text-sm hidden xl:table-cell">
                           {formatDate(user.createdAt)}
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex items-center gap-2 justify-end">
+                          <div className="flex items-center gap-1 sm:gap-2 justify-end">
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => openDeleteDialog(user)}
-                              className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
                             >
-                              <Trash2 className="h-4 w-4" />
-                              Delete
+                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden lg:inline text-xs">Delete</span>
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => openAddFundDialog(user)}
-                              className="flex items-center gap-2 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50"
+                              className="flex items-center gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 h-7 sm:h-8 px-2 sm:px-3"
                             >
-                              <DollarSign className="h-4 w-4" />
-                              Add Fund
+                              <DollarSign className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden sm:inline text-xs">Add</span>
                             </Button>
                             <Button
                               size="sm"
                               onClick={() => router.push(`/admin/users/${user._id}`)}
-                              className="bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-2"
+                              className="bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-1 h-7 sm:h-8 px-2 sm:px-3"
                             >
-                              <Eye className="h-4 w-4" />
-                              View History
+                              <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden md:inline text-xs\">View</span>
                             </Button>
                           </div>
                         </TableCell>

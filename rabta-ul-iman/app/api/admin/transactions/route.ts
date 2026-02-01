@@ -62,10 +62,19 @@ export async function GET(request: NextRequest) {
     const totalApprovedFunds = approved.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
     const pendingCount = transactions.filter((t: any) => t.status === 'pending').length;
 
+    // Calculate categorized funds
+    const rabtaFund = approved
+      .filter((t: any) => t.type === 'rabta')
+      .reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+    
+    const madrassaFund = approved
+      .filter((t: any) => t.type === 'madrassa')
+      .reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+
     const stats = {
       totalApprovedFunds,
-      rabtaFund: 0, // Can be calculated later if needed
-      madrassaFund: 0, // Can be calculated later if needed
+      rabtaFund,
+      madrassaFund,
       pendingCount,
       totalTransactions: transactions.length,
     };

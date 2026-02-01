@@ -104,15 +104,6 @@ export default function AdminLoginPage() {
               </div>
             )}
 
-            {/* Demo Credentials Info */}
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
-              <p className="text-xs text-emerald-700 dark:text-emerald-400 text-center">
-                <strong>Demo Credentials:</strong><br />
-                Username: admin<br />
-                Password: admin123
-              </p>
-            </div>
-
             {/* Submit Button */}
             <Button
               type="submit"
