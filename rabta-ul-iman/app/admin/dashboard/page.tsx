@@ -45,6 +45,8 @@ interface Stats {
   rabtaFund: number;
   madrassaFund: number;
   pendingCount: number;
+  pendingAmount: number;
+  totalAmount: number;
   totalTransactions: number;
 }
 
@@ -57,6 +59,8 @@ export default function AdminDashboard() {
     rabtaFund: 0,
     madrassaFund: 0,
     pendingCount: 0,
+    pendingAmount: 0,
+    totalAmount: 0,
     totalTransactions: 0,
   });
   const [loading, setLoading] = useState(true);
@@ -111,6 +115,8 @@ export default function AdminDashboard() {
           rabtaFund: 0,
           madrassaFund: 0,
           pendingCount: 0,
+          pendingAmount: 0,
+          totalAmount: 0,
           totalTransactions: 0,
         });
         console.log('Transactions loaded:', result.data?.length || 0);
@@ -198,7 +204,7 @@ export default function AdminDashboard() {
       case 'approved':
         return (
           <Badge className="bg-emerald-700 hover:bg-emerald-800 text-white">
-            Approved
+            Paid
           </Badge>
         );
       case 'rejected':
@@ -210,7 +216,7 @@ export default function AdminDashboard() {
       case 'pending':
         return (
           <Badge className="bg-yellow-600 hover:bg-yellow-700 text-white">
-            Pending
+            Unpaid
           </Badge>
         );
       default:
@@ -346,29 +352,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Section */}
-        <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
-          {/* Total Approved Funds */}
-          <Card className="border-emerald-200 dark:border-emerald-900">
-            <CardHeader className="pb-2 sm:pb-3">
-              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
-                Total Approved
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-emerald-700 dark:text-emerald-500">
-                    {formatCurrency(stats.totalApprovedFunds)}
-                  </div>
-                  <p className="text-xs text-slate-500 mt-1 hidden sm:block">
-                    Lifetime donations
-                  </p>
-                </div>
-                <TrendingUp className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-emerald-700 opacity-20" />
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3 mb-6 sm:mb-8">
           {/* Rabta Fund */}
           <Card className="border-blue-200 dark:border-blue-900">
             <CardHeader className="pb-2 sm:pb-3">
@@ -413,24 +397,68 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Pending Approvals */}
+          {/* Unpaid Amount */}
           <Card className="border-yellow-200 dark:border-yellow-900">
             <CardHeader className="pb-2 sm:pb-3">
               <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
-                Pending
+                Unpaid Amount
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-yellow-600 dark:text-yellow-500">
-                    {stats.pendingCount}
+                    {formatCurrency(stats.pendingAmount)}
                   </div>
                   <p className="text-xs text-slate-500 mt-1 hidden sm:block">
-                    Awaiting verification
+                    {stats.pendingCount} unpaid donations
                   </p>
                 </div>
                 <RefreshCw className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-yellow-600 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Paid Amount */}
+          <Card className="border-green-200 dark:border-green-900">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
+                Paid Amount
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-green-700 dark:text-green-500">
+                    {formatCurrency(stats.totalApprovedFunds)}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1 hidden sm:block">
+                    Paid donations
+                  </p>
+                </div>
+                <CheckCircle2 className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-green-700 opacity-20" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Total Amount */}
+          <Card className="border-slate-300 dark:border-slate-700">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
+                Total Amount
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100">
+                    {formatCurrency(stats.totalAmount)}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1 hidden sm:block">
+                    All transactions
+                  </p>
+                </div>
+                <TrendingUp className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-slate-900 dark:text-slate-100 opacity-20" />
               </div>
             </CardContent>
           </Card>
@@ -494,7 +522,7 @@ export default function AdminDashboard() {
                               <span className="hidden sm:inline text-xs">View</span>
                             </Button>
 
-                            {/* Approve Button */}
+                            {/* Mark as Paid Button */}
                             {transaction.status !== 'approved' && (
                               <Button
                                 size="sm"
@@ -505,7 +533,7 @@ export default function AdminDashboard() {
                                 className="h-7 sm:h-8 px-2 sm:px-3 bg-emerald-700 hover:bg-emerald-800 text-white text-xs"
                               >
                                 <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
-                                <span className="hidden sm:inline">Approve</span>
+                                <span className="hidden sm:inline">Paid</span>
                               </Button>
                             )}
 

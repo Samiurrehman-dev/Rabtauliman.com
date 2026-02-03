@@ -46,7 +46,9 @@ export async function GET(request: NextRequest) {
 
         const approvedTransactions = transactions.filter((t: any) => t.status === 'approved');
         const totalContributed = approvedTransactions.reduce((sum: number, t: any) => sum + t.amount, 0);
-        const pendingCount = transactions.filter((t: any) => t.status === 'pending').length;
+        const pendingTransactions = transactions.filter((t: any) => t.status === 'pending');
+        const pendingCount = pendingTransactions.length;
+        const pendingAmount = pendingTransactions.reduce((sum: number, t: any) => sum + t.amount, 0);
         const totalTransactions = transactions.length;
 
         return {
@@ -59,6 +61,7 @@ export async function GET(request: NextRequest) {
           stats: {
             totalContributed,
             pendingCount,
+            pendingAmount,
             totalTransactions,
           }
         };

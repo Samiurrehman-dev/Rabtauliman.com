@@ -45,6 +45,7 @@ import autoTable from 'jspdf-autotable';
 interface UserStats {
   totalContributed: number;
   pendingCount: number;
+  pendingAmount: number;
   totalTransactions: number;
 }
 
@@ -330,7 +331,7 @@ export default function AdminUsersPage() {
       user.whatsapp,
       formatCurrency(user.stats.totalContributed),
       user.stats.totalTransactions,
-      user.stats.pendingCount,
+      formatCurrency(user.stats.pendingAmount),
       formatDate(user.createdAt),
     ]);
 
@@ -345,7 +346,7 @@ export default function AdminUsersPage() {
         'WhatsApp',
         'Total Contributed',
         'Transactions',
-        'Pending',
+        'Unpaid',
         'Joined Date',
       ]],
       body: tableData,
@@ -384,14 +385,14 @@ export default function AdminUsersPage() {
     doc.text('Summary:', 14, finalY + 15);
     
     const totalContributions = filteredUsers.reduce((sum, u) => sum + u.stats.totalContributed, 0);
-    const totalPending = filteredUsers.reduce((sum, u) => sum + u.stats.pendingCount, 0);
+    const totalPending = filteredUsers.reduce((sum, u) => sum + u.stats.pendingAmount, 0);
     const totalTransactions = filteredUsers.reduce((sum, u) => sum + u.stats.totalTransactions, 0);
     
     doc.setFontSize(9);
     doc.setTextColor(50, 50, 50);
     doc.text(`Total Contributions: ${formatCurrency(totalContributions)}`, 14, finalY + 22);
     doc.text(`Total Transactions: ${totalTransactions}`, 14, finalY + 28);
-    doc.text(`Total Pending Pledges: ${totalPending}`, 14, finalY + 34);
+    doc.text(`Total Unpaid Amount: ${formatCurrency(totalPending)}`, 14, finalY + 34);
 
     // Add footer
     const pageCount = doc.getNumberOfPages();
@@ -531,9 +532,9 @@ export default function AdminUsersPage() {
                 </p>
               </div>
               <div className="bg-amber-50 p-3 sm:p-4 rounded-lg border border-amber-200">
-                <p className="text-xs sm:text-sm text-amber-700 font-medium">Pending Pledges</p>
+                <p className="text-xs sm:text-sm text-amber-700 font-medium">Unpaid Amount</p>
                 <p className="text-xl sm:text-2xl font-bold text-amber-900">
-                  {filteredUsers.reduce((sum, u) => sum + u.stats.pendingCount, 0)}
+                  {formatCurrency(filteredUsers.reduce((sum, u) => sum + u.stats.pendingAmount, 0))}
                 </p>
               </div>
             </div>
@@ -589,7 +590,7 @@ export default function AdminUsersPage() {
                       <TableHead className="text-xs sm:text-sm hidden lg:table-cell">WhatsApp</TableHead>
                       <TableHead className="text-xs sm:text-sm">Contributed</TableHead>
                       <TableHead className="text-xs sm:text-sm hidden sm:table-cell">Transactions</TableHead>
-                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Pending</TableHead>
+                      <TableHead className="text-xs sm:text-sm hidden lg:table-cell">Unpaid</TableHead>
                       <TableHead className="text-xs sm:text-sm hidden xl:table-cell">Joined</TableHead>
                       <TableHead className="text-right text-xs sm:text-sm">Actions</TableHead>
                     </TableRow>
@@ -618,14 +619,14 @@ export default function AdminUsersPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
-                          {user.stats.pendingCount > 0 ? (
-                            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-300 text-xs">
-                              {user.stats.pendingCount}
-                            </Badge>
+                          {user.stats.pendingAmount > 0 ? (
+                            <span className="font-semibold text-amber-700 text-xs sm:text-sm">
+                              {formatCurrency(user.stats.pendingAmount)}
+                            </span>
                           ) : (
-                            <Badge variant="outline" className="bg-slate-50 text-xs">
-                              0
-                            </Badge>
+                            <span className="text-slate-500 text-xs sm:text-sm">
+                              {formatCurrency(0)}
+                            </span>
                           )}
                         </TableCell>
                         <TableCell className="text-slate-600 text-xs sm:text-sm hidden xl:table-cell">

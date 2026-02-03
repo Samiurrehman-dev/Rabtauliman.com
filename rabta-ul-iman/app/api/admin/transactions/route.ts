@@ -59,8 +59,11 @@ export async function GET(request: NextRequest) {
 
     // Calculate stats from fetched transactions (faster than aggregation)
     const approved = transactions.filter((t: any) => t.status === 'approved');
+    const pending = transactions.filter((t: any) => t.status === 'pending');
     const totalApprovedFunds = approved.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
-    const pendingCount = transactions.filter((t: any) => t.status === 'pending').length;
+    const pendingAmount = pending.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+    const totalAmount = transactions.reduce((sum: number, t: any) => sum + (t.amount || 0), 0);
+    const pendingCount = pending.length;
 
     // Calculate categorized funds
     const rabtaFund = approved
@@ -76,6 +79,8 @@ export async function GET(request: NextRequest) {
       rabtaFund,
       madrassaFund,
       pendingCount,
+      pendingAmount,
+      totalAmount,
       totalTransactions: transactions.length,
     };
 
