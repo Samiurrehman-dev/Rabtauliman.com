@@ -10,6 +10,7 @@ export interface IUser extends Document {
   whatsapp: string;
   password: string;
   role: UserRole;
+  deletedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -59,6 +60,10 @@ const UserSchema = new Schema<IUser>(
       },
       default: 'donor',
       required: true,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
   },
   {

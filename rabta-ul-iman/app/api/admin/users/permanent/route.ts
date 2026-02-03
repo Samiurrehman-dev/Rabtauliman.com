@@ -1,31 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/src/lib/auth';
-import dbConnect from '@/src/lib/db';
+import connectDB from '@/src/lib/db';
 import User from '@/src/models/User';
 import Transaction from '@/src/models/Transaction';
 
-export async function DELETE(req: NextRequest) {
+// Force Node.js runtime (required for MongoDB)
+export const runtime = 'nodejs';
+
+/**
+ * DELETE /api/admin/users/permanent
+ * Permanently delete a user and all associated transactions
+ */
+export async function DELETE(request: NextRequest) {
   try {
-    // Check authentication
+    // Check authentication and admin role
     const session = await auth();
-    
-    if (!session?.user) {
+    if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    // Check if user is admin
-    if (session.user.role !== 'admin') {
-      return NextResponse.json(
-        { success: false, error: 'Forbidden: Admin access required' },
-        { status: 403 }
-      );
-    }
-
     // Parse request body
-    const { userId } = await req.json();
+    const { userId } = await request.json();
 
     // Validate userId
     if (!userId) {
@@ -36,7 +34,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Connect to database
-    await dbConnect();
+    await connectDB();
 
     // Check if user exists
     const user = await User.findById(userId);
@@ -55,22 +53,33 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    // Soft delete the user by setting deletedAt timestamp
-    await User.findByIdAndUpdate(userId, {
-      deletedAt: new Date()
+    // Check if user is in recycle bin
+    if (!user.deletedAt) {
+      return NextResponse.json(
+        { success: false, error: 'User must be in recycle bin before permanent deletion' },
+        { status: 400 }
+      );
+    }
+
+    // Delete all transactions associated with this user
+    await Transaction.deleteMany({ 
+      $or: [
+        { userId: userId },
+        { donorId: userId }
+      ]
     });
+
+    // Permanently delete the user
+    await User.findByIdAndDelete(userId);
 
     return NextResponse.json({
       success: true,
-      message: 'User moved to recycle bin successfully',
+      message: 'User and associated transactions permanently deleted',
     });
   } catch (error) {
-    console.error('Error deleting user:', error);
+    console.error('Error permanently deleting user:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to delete user' 
-      },
+      { success: false, error: 'Failed to permanently delete user' },
       { status: 500 }
     );
   }

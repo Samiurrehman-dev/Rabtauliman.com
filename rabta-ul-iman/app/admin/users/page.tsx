@@ -486,6 +486,15 @@ export default function AdminUsersPage() {
                 <span className="hidden sm:inline">Add Donor</span>
               </Button>
               <Button
+                onClick={() => router.push('/admin/users/recycle-bin')}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 sm:gap-2 text-red-700 hover:text-red-800 hover:bg-red-50 text-xs sm:text-sm px-2 sm:px-3"
+              >
+                <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden lg:inline">Recycle Bin</span>
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={fetchUsers}
@@ -928,31 +937,34 @@ export default function AdminUsersPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
               <Trash2 className="h-5 w-5" />
-              Delete User
+              Move to Recycle Bin
             </DialogTitle>
             <DialogDescription>
               {selectedUser && (
                 <>
-                  Are you sure you want to delete <span className="font-semibold text-slate-900">{selectedUser.name}</span> (@{selectedUser.username})?
+                  Are you sure you want to move <span className="font-semibold text-slate-900">{selectedUser.name}</span> (@{selectedUser.username}) to the recycle bin?
                 </>
               )}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
-            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-              <p className="text-sm text-red-900 font-semibold mb-2">
-                ⚠️ Warning: This action cannot be undone!
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <p className="text-sm text-amber-900 font-semibold mb-2">
+                ℹ️ This user will be moved to the recycle bin
               </p>
-              <p className="text-sm text-red-800">
-                This will permanently delete:
+              <p className="text-sm text-amber-800">
+                This will temporarily hide:
               </p>
-              <ul className="text-sm text-red-800 list-disc list-inside mt-2 space-y-1">
-                <li>The user account</li>
+              <ul className="text-sm text-amber-800 list-disc list-inside mt-2 space-y-1">
+                <li>The user account (can be restored)</li>
                 <li>All transaction history ({selectedUser?.stats.totalTransactions || 0} transactions)</li>
                 <li>All pending pledges ({selectedUser?.stats.pendingCount || 0} pending)</li>
                 <li>Total contributions: {selectedUser ? formatCurrency(selectedUser.stats.totalContributed) : 'PKR 0'}</li>
               </ul>
+              <p className="text-sm text-amber-900 font-semibold mt-3">
+                You can restore this user from the Recycle Bin or delete permanently.
+              </p>
             </div>
 
             <DialogFooter className="gap-2">
@@ -970,18 +982,18 @@ export default function AdminUsersPage() {
               <Button
                 type="button"
                 onClick={deleteUser}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-amber-600 hover:bg-amber-700 text-white"
                 disabled={deleting}
               >
                 {deleting ? (
                   <>
                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Deleting...
+                    Moving to Recycle Bin...
                   </>
                 ) : (
                   <>
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Yes, Delete User
+                    Yes, Move to Recycle Bin
                   </>
                 )}
               </Button>

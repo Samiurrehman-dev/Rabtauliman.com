@@ -8,8 +8,8 @@ import Transaction from '@/src/models/Transaction';
 export const runtime = 'nodejs';
 
 /**
- * GET /api/admin/users
- * Fetch all donors (users with role 'donor') with their transaction counts
+ * GET /api/admin/users/recycle-bin
+ * Fetch all soft-deleted donors (users with deletedAt set)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -25,13 +25,13 @@ export async function GET(request: NextRequest) {
     // Connect to database
     await connectDB();
 
-    // Fetch all donors (exclude soft-deleted users)
+    // Fetch all soft-deleted donors
     const users = await User.find({ 
       role: 'donor',
-      deletedAt: null 
+      deletedAt: { $ne: null } 
     })
       .select('-password')
-      .sort({ createdAt: -1 })
+      .sort({ deletedAt: -1 })
       .lean();
 
     // For each user, get their transaction stats
@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
           phone: user.phone,
           whatsapp: user.whatsapp,
           createdAt: user.createdAt,
+          deletedAt: user.deletedAt,
           stats: {
             totalContributed,
             pendingCount,
@@ -77,9 +78,9 @@ export async function GET(request: NextRequest) {
       count: usersWithStats.length
     });
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching deleted users:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch users' },
+      { success: false, error: 'Failed to fetch deleted users' },
       { status: 500 }
     );
   }
