@@ -29,7 +29,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { CheckCircle2, XCircle, Eye, RefreshCw, TrendingUp, Users, LogOut, User, Settings, UserPlus, Search } from 'lucide-react';
+import { CheckCircle2, XCircle, Eye, RefreshCw, TrendingUp, Users, LogOut, User, Settings, UserPlus, Search, Download } from 'lucide-react';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Transaction {
   _id: string;
@@ -230,6 +232,114 @@ export default function AdminDashboard() {
   // Handle logout
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/admin/login' });
+  };
+
+  // Download PDF function
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Rabta-ul-Iman - Transaction Report', 14, 15);
+    
+    // Add date
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Generated on: ${new Date().toLocaleDateString('en-PK', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}`, 14, 22);
+    
+    // Add filter info if any
+    let yPos = 28;
+    if (searchQuery || statusFilter !== 'all') {
+      doc.setFontSize(9);
+      doc.text('Filters Applied:', 14, yPos);
+      yPos += 5;
+      if (searchQuery) {
+        doc.text(`- Search: ${searchQuery}`, 14, yPos);
+        yPos += 5;
+      }
+      if (statusFilter !== 'all') {
+        doc.text(`- Status: ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}`, 14, yPos);
+        yPos += 5;
+      }
+    }
+    
+    // Prepare table data
+    const tableData = filteredTransactions.map((transaction, index) => [
+      index + 1,
+      transaction.donorName,
+      `PKR ${transaction.amount.toLocaleString('en-PK')}`,
+      transaction.status === 'approved' ? 'Paid' : 
+        transaction.status === 'rejected' ? 'Rejected' : 'Unpaid',
+      new Date(transaction.createdAt).toLocaleDateString('en-PK', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    ]);
+    
+    // Add table using autoTable
+    autoTable(doc, {
+      startY: yPos + 5,
+      head: [['#', 'Donor Name', 'Amount', 'Status', 'Date']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [5, 150, 105], // emerald-700
+        textColor: 255,
+        fontStyle: 'bold',
+        fontSize: 10
+      },
+      bodyStyles: {
+        fontSize: 9
+      },
+      alternateRowStyles: {
+        fillColor: [248, 250, 252] // slate-50
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: 'center' },
+        1: { cellWidth: 60 },
+        2: { cellWidth: 35, halign: 'right' },
+        3: { cellWidth: 30, halign: 'center' },
+        4: { cellWidth: 40, halign: 'center' }
+      },
+      didParseCell: function(data: any) {
+        // Color code status column
+        if (data.column.index === 3 && data.section === 'body') {
+          const status = filteredTransactions[data.row.index].status;
+          if (status === 'approved') {
+            data.cell.styles.textColor = [5, 150, 105]; // green
+            data.cell.styles.fontStyle = 'bold';
+          } else if (status === 'rejected') {
+            data.cell.styles.textColor = [220, 38, 38]; // red
+            data.cell.styles.fontStyle = 'bold';
+          } else if (status === 'pending') {
+            data.cell.styles.textColor = [202, 138, 4]; // yellow
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+      }
+    });
+    
+    // Add summary at the bottom
+    const finalY = (doc as any).lastAutoTable.finalY || yPos + 50;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Summary:', 14, finalY + 10);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.text(`Total Transactions: ${filteredTransactions.length}`, 14, finalY + 16);
+    doc.text(`Total Amount: PKR ${filteredTransactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString('en-PK')}`, 14, finalY + 22);
+    
+    // Save the PDF
+    const fileName = `Rabta-ul-Iman-Transactions-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(fileName);
   };
 
   // Show loading while checking auth
@@ -502,6 +612,18 @@ export default function AdminDashboard() {
                   className="pl-10 w-full"
                 />
               </div>
+              
+              {/* Download PDF Button */}
+              <Button
+                onClick={downloadPDF}
+                variant="outline"
+                size="sm"
+                className="border-emerald-700 text-emerald-700 hover:bg-emerald-50 whitespace-nowrap"
+                title="Download transactions as PDF"
+              >
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Download PDF</span>
+              </Button>
               
               {/* Status Filter Buttons */}
               <div className="flex gap-2">
