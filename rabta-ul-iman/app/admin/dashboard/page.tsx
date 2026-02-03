@@ -28,7 +28,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, Eye, RefreshCw, TrendingUp, Users, LogOut, User, Settings, UserPlus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { CheckCircle2, XCircle, Eye, RefreshCw, TrendingUp, Users, LogOut, User, Settings, UserPlus, Search } from 'lucide-react';
 
 interface Transaction {
   _id: string;
@@ -68,6 +69,8 @@ export default function AdminDashboard() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -272,6 +275,18 @@ export default function AdminDashboard() {
     );
   }
 
+  // Filter transactions based on search and status
+  const filteredTransactions = transactions.filter((transaction) => {
+    // Search filter
+    const matchesSearch = searchQuery === '' || 
+      transaction.donorName.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Status filter
+    const matchesStatus = statusFilter === 'all' || transaction.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+
   // Get recent approved donors (last 5)
   const recentDonors = transactions
     .filter((t) => t.status === 'approved')
@@ -473,6 +488,57 @@ export default function AdminDashboard() {
             <CardDescription className="text-xs sm:text-sm">
               Verify and manage donations
             </CardDescription>
+            
+            {/* Search and Filter Section */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4">
+              {/* Search Input */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  type="text"
+                  placeholder="Search by donor name..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-full"
+                />
+              </div>
+              
+              {/* Status Filter Buttons */}
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant={statusFilter === 'all' ? 'default' : 'outline'}
+                  onClick={() => setStatusFilter('all')}
+                  className={statusFilter === 'all' ? 'bg-emerald-700 hover:bg-emerald-800' : ''}
+                >
+                  All
+                </Button>
+                <Button
+                  size="sm"
+                  variant={statusFilter === 'pending' ? 'default' : 'outline'}
+                  onClick={() => setStatusFilter('pending')}
+                  className={statusFilter === 'pending' ? 'bg-yellow-600 hover:bg-yellow-700' : 'border-yellow-600 text-yellow-600'}
+                >
+                  Unpaid
+                </Button>
+                <Button
+                  size="sm"
+                  variant={statusFilter === 'approved' ? 'default' : 'outline'}
+                  onClick={() => setStatusFilter('approved')}
+                  className={statusFilter === 'approved' ? 'bg-emerald-700 hover:bg-emerald-800' : 'border-emerald-700 text-emerald-700'}
+                >
+                  Paid
+                </Button>
+                <Button
+                  size="sm"
+                  variant={statusFilter === 'rejected' ? 'default' : 'outline'}
+                  onClick={() => setStatusFilter('rejected')}
+                  className={statusFilter === 'rejected' ? 'bg-red-600 hover:bg-red-700' : 'border-red-600 text-red-600'}
+                >
+                  Rejected
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -480,12 +546,15 @@ export default function AdminDashboard() {
                 <RefreshCw className="h-8 w-8 animate-spin text-emerald-700" />
                 <span className="ml-3 text-slate-600">Loading transactions...</span>
               </div>
-            ) : transactions.length === 0 ? (
+            ) : filteredTransactions.length === 0 ? (
               <div className="text-center py-12 text-slate-500">
-                No transactions found
+                {searchQuery || statusFilter !== 'all' ? 'No matching transactions found' : 'No transactions found'}
               </div>
             ) : (
               <div className="overflow-x-auto -mx-2 sm:mx-0">
+                <div className="text-xs text-slate-500 mb-2 px-1">
+                  Showing {filteredTransactions.length} of {transactions.length} transactions
+                </div>
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -497,7 +566,7 @@ export default function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {transactions.map((transaction) => (
+                    {filteredTransactions.map((transaction) => (
                       <TableRow key={transaction._id}>
                         <TableCell className="font-medium text-xs sm:text-sm">
                           {transaction.donorName}
