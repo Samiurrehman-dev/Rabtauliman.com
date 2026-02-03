@@ -53,6 +53,7 @@ import {
   Filter,
   Check,
   X,
+  Trash2,
 } from 'lucide-react';
 
 interface Transaction {
@@ -170,6 +171,31 @@ export default function UserProfilePage() {
     } catch (error) {
       console.error('Error updating transaction:', error);
       alert(`Error updating transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  // Delete transaction
+  const deleteTransaction = async (transactionId: string) => {
+    if (!confirm('Are you sure you want to delete this transaction? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/transactions/${transactionId}`, {
+        method: 'DELETE',
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('Transaction deleted successfully!');
+        fetchUserData(); // Refresh data
+      } else {
+        alert(`Failed to delete transaction: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      alert(`Error deleting transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -637,30 +663,42 @@ export default function UserProfilePage() {
                           )}
                         </TableCell>
                         <TableCell className="text-right">
-                          {transaction.status === 'pending' ? (
-                            <div className="flex items-center gap-1 justify-end">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateTransactionStatus(transaction._id, 'approved')}
-                                className="flex items-center gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 h-7 sm:h-8 px-2 sm:px-3"
-                              >
-                                <Check className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden lg:inline text-xs">Approve</span>
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => updateTransactionStatus(transaction._id, 'rejected')}
-                                className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
-                              >
-                                <X className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden lg:inline text-xs">Reject</span>
-                              </Button>
-                            </div>
-                          ) : (
-                            <span className="text-slate-400 text-xs sm:text-sm">-</span>
-                          )}
+                          <div className="flex items-center gap-1 justify-end">
+                            {/* Delete Button - Always visible */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteTransaction(transaction._id)}
+                              className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
+                            >
+                              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span className="hidden lg:inline text-xs">Delete</span>
+                            </Button>
+                            
+                            {/* Approve/Reject Buttons - Only for pending */}
+                            {transaction.status === 'pending' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateTransactionStatus(transaction._id, 'approved')}
+                                  className="flex items-center gap-1 text-emerald-700 hover:text-emerald-800 hover:bg-emerald-50 h-7 sm:h-8 px-2 sm:px-3"
+                                >
+                                  <Check className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  <span className="hidden lg:inline text-xs">Approve</span>
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateTransactionStatus(transaction._id, 'rejected')}
+                                  className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 h-7 sm:h-8 px-2 sm:px-3"
+                                >
+                                  <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                                  <span className="hidden lg:inline text-xs">Reject</span>
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
