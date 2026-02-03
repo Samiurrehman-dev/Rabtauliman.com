@@ -329,13 +329,31 @@ export default function AdminDashboard() {
     
     // Add summary at the bottom
     const finalY = (doc as any).lastAutoTable.finalY || yPos + 50;
+    
+    // Calculate amounts from filtered transactions
+    const totalAmount = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+    const paidAmount = filteredTransactions.filter(t => t.status === 'approved').reduce((sum, t) => sum + t.amount, 0);
+    const unpaidAmount = filteredTransactions.filter(t => t.status === 'pending').reduce((sum, t) => sum + t.amount, 0);
+    
     doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
     doc.text('Summary:', 14, finalY + 10);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.text(`Total Transactions: ${filteredTransactions.length}`, 14, finalY + 16);
-    doc.text(`Total Amount: PKR ${filteredTransactions.reduce((sum, t) => sum + t.amount, 0).toLocaleString('en-PK')}`, 14, finalY + 22);
+    doc.text(`Total Amount: PKR ${totalAmount.toLocaleString('en-PK')}`, 14, finalY + 22);
+    
+    // Add paid amount in green
+    doc.setTextColor(5, 150, 105);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Paid Amount: PKR ${paidAmount.toLocaleString('en-PK')}`, 14, finalY + 28);
+    
+    // Add unpaid amount in yellow/orange
+    doc.setTextColor(202, 138, 4);
+    doc.text(`Unpaid Amount: PKR ${unpaidAmount.toLocaleString('en-PK')}`, 14, finalY + 34);
+    
+    // Reset text color
+    doc.setTextColor(0, 0, 0);
     
     // Save the PDF
     const fileName = `Rabta-ul-Iman-Transactions-${new Date().toISOString().split('T')[0]}.pdf`;
