@@ -146,7 +146,7 @@ export default function AdminDashboard() {
   // Update transaction status
   const updateTransactionStatus = async (
     id: string,
-    status: 'approved' | 'rejected'
+    status: 'approved' | 'rejected' | 'pending'
   ) => {
     try {
       setUpdating(id);
@@ -603,6 +603,21 @@ export default function AdminDashboard() {
                               >
                                 <CheckCircle2 className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
                                 <span className="hidden sm:inline">Paid</span>
+                              </Button>
+                            )}
+
+                            {/* Mark as Unpaid Button (for approved transactions) */}
+                            {transaction.status === 'approved' && (
+                              <Button
+                                size="sm"
+                                onClick={() =>
+                                  updateTransactionStatus(transaction._id, 'pending')
+                                }
+                                disabled={updating === transaction._id}
+                                className="h-7 sm:h-8 px-2 sm:px-3 bg-yellow-600 hover:bg-yellow-700 text-white text-xs"
+                              >
+                                <RefreshCw className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
+                                <span className="hidden sm:inline">Unpaid</span>
                               </Button>
                             )}
 
